@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TextInput } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TextInput, Button, ActivityIndicator } from 'react-native';
 // import { Picker } from '@react-native-picker/picker';
+import { Picker } from '@react-native-picker/picker';
 import { Link } from 'expo-router';
 import axios from 'axios';
 import { baseURL } from '../../services/config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Sample data for projects
 const projectsy = [
@@ -14,59 +16,91 @@ const projectsy = [
 ];
 
 export default function Projects() {
-  const [lgaFilter, setLgaFilter] = useState('');
-  const [facilityFilter, setFacilityFilter] = useState('');
+  const [lgaFilter, setLgaFilter] = useState('Birnin Gwari');
+  const [facilityFilter, setFacilityFilter] = useState('HPBH');
   const [projects, setProjects] = useState([]);
+  const [pageLoading, setPageLoading] = useState(true);
 
   // Filter projects based on LGA and Facility
   const filteredProjects = projects.filter((project) => {
     const matchesLga = lgaFilter ? project.lga === lgaFilter : true;
-    const matchesFacility = facilityFilter ? project.facility === facilityFilter : true;
+    const matchesFacility = facilityFilter ? project.title === facilityFilter : true;
     return matchesLga && matchesFacility;
   });
 
-  const getProjects = async () => {
-    const res = await axios.get(`${baseURL}/projects`);
-    setProjects(res.data);
+  const loadDrafts = async () => {
+    try {
+      const storedDrafts = await AsyncStorage.getItem('projects');
+      if (storedDrafts) {
+        setProjects(JSON.parse(storedDrafts));
+      }
+    } catch (error) {
+      console.error('Error loading drafts:', error);
+    }finally{
+      setPageLoading(false)
+    }
   };
-      
+  const getProjects = async () => {
+    try{
+    const res = await axios.get(`${baseURL}/projects`);
+      await AsyncStorage.setItem('projects', JSON.stringify(res?.data));
+    setProjects(res.data);
+    }catch(e){
+      console.log(e)
+    }finally{
+      setPageLoading(false)
+    }
+  };
+  const lgaList= ['Birnin Gwari', 'Chikun', 'Giwa', 'Igabi', 'Ikara', 'Jaba', 'Jemaa', 'Kachia', 'Kaduna North', 'Kaduna South', 'Kagarko', 'Kajuru', 'Kaura', 'Kauru', 'Kubau', 'Kudan', 'Lere', 'Makarfi', 'Sabon Gari', 'Sanga', 'Soba', 'Zangon Kataf', 'Zaria']
   useEffect(async() => {
+    loadDrafts();
    getProjects();
 
   }, []);
 
+   if (pageLoading) {
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#007AFF" />
+        </View>
+      );
+    }
   return (
     <View style={styles.container}>
+      {/* <View style={{ flex: 1, marginTop: 20, justifyContent: 'flex-end'}}>
+        <Button title="Report unknow project" />
+      </View> */}
       <Text style={styles.title}>Projects</Text>
 
       {/* Filter by LGA */}
       <View style={styles.filterContainer}>
-        <Text style={styles.filterLabel}>Filter by LGA:</Text>
-        {/* <Picker
-          selectedValue={lgaFilter}
-          onValueChange={(itemValue) => setLgaFilter(itemValue)}
-          style={styles.picker}
-        >
-          <Picker.Item label="All" value="" />
-          <Picker.Item label="LGA A" value="LGA A" />
-          <Picker.Item label="LGA B" value="LGA B" />
-          <Picker.Item label="LGA C" value="LGA C" />
-        </Picker> */}
-      </View>
-
-      {/* Filter by Facility */}
-      <View style={styles.filterContainer}>
         <Text style={styles.filterLabel}>Filter by Facility:</Text>
-        {/* <Picker
+        <Picker
           selectedValue={facilityFilter}
           onValueChange={(itemValue) => setFacilityFilter(itemValue)}
           style={styles.picker}
         >
-          <Picker.Item label="All" value="" />
-          <Picker.Item label="Facility X" value="Facility X" />
-          <Picker.Item label="Facility Y" value="Facility Y" />
-          <Picker.Item label="Facility Z" value="Facility Z" />
-        </Picker> */}
+          
+          <Picker.Item value="HPBH" label="Handpump Borehole" />
+          <Picker.Item value="SMBH" label="Solar Motorized" />
+          <Picker.Item value="FLBH" label="Force Lift Borehole" />
+          <Picker.Item value="VIP" label="VIP Laterine" />
+        </Picker>
+      </View>
+
+      {/* Filter by Facility */}
+      <View style={styles.filterContainer}>
+        <Text style={styles.filterLabel}>Filter by LGA:</Text>
+        <Picker
+          selectedValue={lgaFilter}
+          onValueChange={(itemValue) => setLgaFilter(itemValue)}
+          style={styles.picker}
+        >
+          {/* <Picker.Item label="All" value="" /> */}
+          {lgaList?.map(e=>
+          <Picker.Item label={e} value={e} key={e} />
+          )}
+        </Picker>
       </View>
           {//navigation.navigate('details', {data: JSON.stringify(project)})}}
           }

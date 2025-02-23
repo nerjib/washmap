@@ -45,6 +45,20 @@ export default function AppLayout() {
           drawerLabel: 'Daily Report',
         }}
       />
+      <Drawer.Screen
+        name="request" // This corresponds to app/(app)/projects/index.js
+        options={{
+          title: 'Facility Request',
+          drawerLabel: 'Facility Request',
+        }}
+      />
+       <Drawer.Screen
+        name="draft" // This corresponds to app/(app)/projects/index.js
+        options={{
+          title: 'Draft',
+          drawerLabel: 'Saved Report',
+        }}
+      />
     </Drawer>
   );
 }

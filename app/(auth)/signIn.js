@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, ActivityIndicator } from 'react-native';
 import { Link, useNavigation } from 'expo-router';
 import { UserContext } from '../context/contextUser';
 import axios from 'axios';
@@ -12,6 +12,7 @@ export default function SignIn() {
   const { setUser } = useContext(UserContext);
     const navigation = useNavigation();
     const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login state
+    const [pageLoading, setPageLoading] = useState(true);
 
 
   const handleSignIn = async () => {
@@ -49,10 +50,19 @@ export default function SignIn() {
       }
     }catch(e){
       console.log(e)
+    }finally{
+      setPageLoading(false)
     }
     }
     checkUser();
   }, [])
+  if (pageLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#007AFF" />
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sign In</Text>
@@ -94,6 +104,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 10,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   link: {
     marginTop: 10,

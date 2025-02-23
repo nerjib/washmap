@@ -13,12 +13,12 @@ import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { RadioGroup } from 'react-native-radio-buttons-group';
 import axios from 'axios';
-import { baseURL } from '../../services/config';
-import { UserContext } from '../../context/contextUser';
+import { UserContext } from '../context/contextUser';
 import * as ImagePicker from 'expo-image-picker';
+import { baseURL } from '../services/config';
 
 
-export default function Report() {
+export default function FacilityRequest() {
   const { user } = useContext(UserContext);
   const navigation = useNavigation();
   const { id: projectId } = useLocalSearchParams(); // Get projectId from the URL
@@ -36,6 +36,11 @@ export default function Report() {
   const [drafts, setDrafts] = useState([]);
   const [imageUri, setImageUri] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [facility, setFacility] = useState('HPBH');
+  const [community, setCommunity] = useState('');
+  const [ward, setWard] = useState('')
+  const [reason, setReason] = useState('');
+  const [population, setPopulation] = useState('')
   
     
 
@@ -137,43 +142,31 @@ export default function Report() {
     //   Alert.alert('Error', 'Please capture an image and fetch your location.');
     //   return;
     // }
- if (!imageUri || !location) {
-      Alert.alert('Error', 'Please capture an image and fetch your location.');
-      return;
-    }
-    const reportData = {
-      project_id:projectId, // Include the projectId in the report data
-      // image,
-      // location: {
-      //   latitude: location.latitude,
-      //   longitude: location.longitude,
-      // },
-      // projectStage,
-      recommendation: recommendations,
-      status: selectedId === '1' ? true : false,
-      issue,
-      sender: user.full_name,
-    };
+//  if (!imageUri || !location) {
+//       Alert.alert('Error', 'Please capture an image and fetch your location.');
+//       return;
+//     }
     const formData = new FormData();
-        formData.append('project_id',  projectId)
-        formData.append('longitude',location.longitude)
-        formData.append('latitude', location.latitude)
-        formData.append('recommendation', recommendations)
-        formData.append('status', selectedId === '1' ? true : false)
-        formData.append('issue', issue)
+        formData.append('community',  community)
+        formData.append('ward', ward)
+        formData.append('facility', facility)
+        formData.append('population', population)
+        formData.append('reason', reason)
         formData.append('sender', user.full_name)
+        formData.append('lga', user.lga)
+        
 
-        if (imageUri) {
-              const imageName = imageUri.split('/').pop();
-              formData.append('image', {
-                uri: imageUri,
-                type: 'image/jpeg',
-                name: imageName,
-              });
-            }
+        // if (imageUri) {
+        //       const imageName = imageUri.split('/').pop();
+        //       formData.append('image', {
+        //         uri: imageUri,
+        //         type: 'image/jpeg',
+        //         name: imageName,
+        //       });
+        //     }
       try{
         setLoading(true);
-            const response = await fetch(`${baseURL}/functionality`, {
+            const response = await fetch(`${baseURL}/facility/request`, {
               method: 'POST',
               body: formData,
               headers: {
@@ -181,14 +174,14 @@ export default function Report() {
               },
             });
       
-            if (response.ok) {
-              Alert.alert('Success', 'Report submitted successfully!');
+            if (response) {
+              Alert.alert('Success', 'request submitted successfully!');
               resetForm();
               navigation.navigate('(app)', { screen: 'projects' });
               // await generateAndSharePDF(); // Generate and share PDF after successful submission
             } else {
               const errorData = await response.json();
-              Alert.alert('Error', `Failed to submit report. ${errorData.message || response.statusText}`);
+              Alert.alert('Error', `Failed to submit request. ${errorData.message || response.statusText}`);
             }
           } catch (error) {
             console.error('Submission error:', error);
@@ -235,13 +228,15 @@ export default function Report() {
   };
 
   const resetForm =()=> {
-    setRecommendations('');
-    setIssue('');
-    setImageUri('');
+    setCommunity('');
+    setWard('');
+    setReason('');
+    setPopulation('')
+    
   }
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Functionality Report for Project {pro?.title} in {pro?.community}, {pro.lga} LGA</Text>
+      <Text style={styles.title}> Facility Request Form</Text>
 
       {/* Camera Preview */}
       {/* <Camera
@@ -253,17 +248,17 @@ export default function Report() {
       {/* <Button title="Get GPS Location" onPress={getLocation} /> */}
 
       {/* Display Location */}
-      <Button title="Refresh GPS Location" onPress={getLocation} />
+      {/* <Button title="Refresh GPS Location" onPress={getLocation} />
       {location && (
         <View style={styles.locationContainer}>
           <Text>Latitude: {location.latitude}</Text>
           <Text>Longitude: {location.longitude}</Text>
         </View>
-      )}
-
+      )} */}
+{/* 
     <View style={styles.cameraButtonContainer}>
           <Button title="Take Picture" onPress={takePicture} />
-        </View>
+        </View> */}
       {/* </Camera> */}
 
       {/* Display Captured Image */}
@@ -309,54 +304,68 @@ export default function Report() {
               {label:'Final on from site', value:'FR'}      
           ]}
           /> */}
-          <ThemedView style={{marginTop: 20, padding: 10, backgroundColor: '#fff'}}>
-              <ThemedText style={{ color: "#000"}}>Is facility working</ThemedText>
-              <RadioGroup color='#000'
-                radioButtons={radioButtons} 
-                onPress={setSelectedId}
-                selectedId={selectedId}
-              />
-              
-              {/* <Picker
-                selectedValue={projectStage}
-                onValueChange={(itemValue, itemIndex) =>
-                  setProjectStage(itemValue)
-                }>
-                <Picker.Item label="Java" value="java" />
-                <Picker.Item label="JavaScript" value="js" />
-              </Picker> */}
-          </ThemedView>
       </View>
-      {selectedId === '2' && (
-        <View style={styles.inputContainer}>
-        <Text style={styles.label}>Describe Issue</Text>
-        <TextInput
-          style={styles.textInput}
-          multiline
-          numberOfLines={4}
-          placeholder="briefly describe the issue here..."
-          value={issue}
-          onChangeText={setIssue}
-        />
-      </View>)}
-      {/* Recommendations Input */}
+            {/* Recommendations Input */}
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>Recommendations</Text>
+        <Text style={styles.label}>Name of Community</Text>
+        <TextInput
+          style={styles.textInput}
+         
+          placeholder="Enter name of community"
+          value={community}
+          onChangeText={setCommunity}
+        />
+      </View>
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Name of Ward</Text>
+        <TextInput
+          style={styles.textInput}
+         
+          placeholder="Name of ward"
+          value={ward}
+          onChangeText={setWard}
+        />
+      </View>
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Select facility</Text>
+       <Picker
+                selectedValue={facility}
+                onValueChange={(itemValue) => setFacility(itemValue)}
+                style={styles.picker}
+              >
+                
+                <Picker.Item value="HPBH" label="Handpump Borehole" />
+                <Picker.Item value="SMBH" label="Solar Motorized" />
+                <Picker.Item value="FLBH" label="Force Lift Borehole" />
+                <Picker.Item value="VIP" label="VIP Laterine" />
+              </Picker>
+    </View>
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Population</Text>
+        <TextInput
+            type="number"
+          style={styles.textInput}
+          placeholder="Population"
+          value={population}
+          onChangeText={setPopulation}
+        />
+      </View>
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Briefly give reason why the above facility should be allocated here</Text>
         <TextInput
           style={styles.textInput}
           multiline
           numberOfLines={4}
-          placeholder="Enter your recommendations..."
-          value={recommendations}
-          onChangeText={setRecommendations}
+          placeholder=""
+          value={reason}
+          onChangeText={setReason}
         />
       </View>
 
       {/* Submit Report */}
       <View style={styles.inputContainer}>
 
-      <Button disabled={loading} title="Submit Report" onPress={submitReport} />
-      <Button title="Save as draft" onPress={saveDraft} />
+      <Button disabled={loading} title="Submit Request" onPress={submitReport} />
 
 </View>
       {/* Error Message */}

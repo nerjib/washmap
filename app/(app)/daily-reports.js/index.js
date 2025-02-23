@@ -5,6 +5,7 @@ import { Link } from 'expo-router';
 import axios from 'axios';
 import { baseURL } from '../../services/config';
 import { UserContext } from '../../context/contextUser';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Sample data for projects
 const projectsy = [
@@ -28,12 +29,27 @@ export default function Projects() {
   });
 
   
-      
+  const loadDrafts = async () => {
+    try {
+      const storedDrafts = await AsyncStorage.getItem('daily');
+      if (storedDrafts) {
+        setProjects(JSON.parse(storedDrafts));
+      }
+    } catch (error) {
+      console.error('Error loading drafts:', error);
+    }finally{
+      // setPageLoading(false)
+    }
+  };
+
   useEffect(async() => {
     const getProjects = async () => {
-        const res = await axios.get(`${baseURL}/projects/${user.id}`);
+        const res = await axios.get(`${baseURL}/projects/lga/${user.id}`);
+        await AsyncStorage.setItem('daily', JSON.stringify(res?.data));
         setProjects(res.data);
       };
+      loadDrafts();
+
    getProjects();
 
   }, []);
