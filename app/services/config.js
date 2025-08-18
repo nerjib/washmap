@@ -1,0 +1,1 @@
+export const baseURL = 'https://ruwassa-69889b243ddb.herokuapp.com/api/v1/ruwassa';

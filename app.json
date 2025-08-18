@@ -1,0 +1,60 @@
+{
+  "expo": {
+    "name": "WASH-MAP",
+    "slug": "ruwassa-monitoring-app",
+    "version": "3.1.1",
+    "orientation": "portrait",
+    "icon": "./assets/images/logo91.png",
+    "scheme": "wash-map",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/logo91.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.kadruwassa.kmap",
+      "targetSdkVersion": 35
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/logo91.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/logo91.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "recordAudioAndroid": true
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "85d8aa29-1af4-4081-81fd-0ff5048096bc"
+      }
+    },
+    "owner": "nerjib"
+  }
+}
