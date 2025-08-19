@@ -118,7 +118,7 @@ export default function Report() {
   // Capture image from camera
   const takePicture = async () => {
         let result = await ImagePicker.launchCameraAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          mediaTypes: ImagePicker.MediaType.Images,
           allowsEditing: false,
           aspect: [4, 3],
           quality: 1,

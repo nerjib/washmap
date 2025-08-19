@@ -37,6 +37,13 @@ export default function AppLayout() {
           drawerLabel: 'Home',
         }}
       />
+       <Drawer.Screen
+        name="projects/index"
+        options={{ 
+          title: 'My Projects',
+          drawerLabel: 'My Projects'
+        }}
+      />
       {user?.role === 'odf' && (
         <Drawer.Screen name="odf-report" 
         options={{ 
@@ -84,12 +91,7 @@ export default function AppLayout() {
           drawerItemStyle: { display: 'none' },
         }}
       />
-      <Drawer.Screen
-        name="projects/index"
-        options={{
-          drawerItemStyle: { display: 'none' },
-        }}
-      />
+     
     </Drawer>
   );
 }

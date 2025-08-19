@@ -16,6 +16,7 @@ export default function SignIn() {
 
   const handleSignIn = async () => {
     setLoading(true);
+    console.log({email, password})
     try {
       const res = await axios.post(`${baseURL}/auth/login`, { email, password });
       const { user } = res.data;
