@@ -12,8 +12,7 @@ import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { RadioGroup } from 'react-native-radio-buttons-group';
-import axios from 'axios';
-import { baseURL } from '../../services/config';
+import api from '../../services/axiosConfig';
 import { UserContext } from '../../context/contextUser';
 import * as ImagePicker from 'expo-image-picker';
 
@@ -173,15 +172,9 @@ export default function Report() {
             }
       try{
         setLoading(true);
-            const response = await fetch(`${baseURL}/functionality`, {
-              method: 'POST',
-              body: formData,
-              headers: {
-                'Content-Type': 'multipart/form-data',
-              },
-            });
+            const response = await api.post('/functionality', formData);
       
-            if (response.ok) {
+            if (response.status === 200 || response.status === 201) {
               Alert.alert('Success', 'Report submitted successfully!');
               resetForm();
               navigation.navigate('(app)', { screen: 'projects' });
@@ -212,6 +205,9 @@ export default function Report() {
         }
     const draft = {
       project_id: projectId,
+      project_community: pro.community,
+      project_lga: pro.lga,
+      project_title: pro.title,
       recommendation: recommendations,
       status: selectedId === '1' ? true : false,
       issue,

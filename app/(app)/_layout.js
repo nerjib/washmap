@@ -12,6 +12,7 @@ function CustomDrawerContent(props) {
 
   const handleSignOut = async () => {
     await AsyncStorage.removeItem('user');
+    await AsyncStorage.removeItem('myAssignedProjects');
     setUser(null);
     router.replace('/(auth)/signIn');
   };
@@ -52,6 +53,25 @@ export default function AppLayout() {
         }}
         />
       )}
+        {user?.role === 'admin' && (
+            <Drawer.Screen
+                name="all-projects"
+                options={{
+                    title: 'All Projects',
+                    drawerLabel: 'All Projects',
+                }}
+            />
+        )}
+
+        {(user?.role === 'admin' || user?.role === 'super_admin') && (
+            <Drawer.Screen
+                name="user-management"
+                options={{
+                    title: 'User Management',
+                    drawerLabel: 'User Management',
+                }}
+            />
+        )}
       <Drawer.Screen
         name="daily-reports.js/index"
         options={{
@@ -87,6 +107,18 @@ export default function AppLayout() {
       />
       <Drawer.Screen
         name="daily-progress"
+        options={{
+          drawerItemStyle: { display: 'none' },
+        }}
+      />
+      <Drawer.Screen
+        name="view-evaluations"
+        options={{
+          drawerItemStyle: { display: 'none' },
+        }}
+      />
+      <Drawer.Screen
+        name="project-evaluation"
         options={{
           drawerItemStyle: { display: 'none' },
         }}

@@ -2,8 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useNavigation } from 'expo-router';
 import { UserContext } from '../context/contextUser';
-import axios from 'axios';
-import { baseURL } from '../services/config';
+import api from '../services/axiosConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SignIn() {
@@ -18,10 +17,11 @@ export default function SignIn() {
     setLoading(true);
     console.log({email, password})
     try {
-      const res = await axios.post(`${baseURL}/auth/login`, { email, password });
-      const { user } = res.data;
+      const res = await api.post('/auth/login', { email, password });
+      const { user, token } = res.data;
       if (user) {
         await AsyncStorage.setItem('user', JSON.stringify(user));
+        await AsyncStorage.setItem('userToken', token);
         setUser(user);
         navigation.navigate('(app)', { screen: 'home' });
       } else {

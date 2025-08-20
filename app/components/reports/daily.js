@@ -5,8 +5,7 @@ import * as Location from 'expo-location';
 import { Picker } from '@react-native-picker/picker';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { UserContext } from '../../context/contextUser';
-import axios from 'axios';
-import { baseURL } from '../../services/config';
+import api from '../../services/axiosConfig';
 import * as ImagePicker from 'expo-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -107,15 +106,9 @@ export default function Report() {
                 formData.append('image', { uri: imageUri, name: imageName, type: imageType });
             }
 
-            const response = await fetch(`${baseURL}/dailyreports`, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+            const response = await api.post('/reports/dailyreports', formData);
 
-            if (response.ok) {
+            if (response.status === 200 || response.status === 201) {
                 Alert.alert('Success', 'Report submitted successfully!');
                 resetForm();
                 navigation.navigate('(app)', { screen: 'projects' });
@@ -138,6 +131,9 @@ export default function Report() {
         }
         const draft = {
             project_id: pro.id,
+            project_community: pro.community,
+            project_lga: pro.lga,
+            project_title: pro.title,
             date: activityDate.toISOString(),
             activity,
             outcome,

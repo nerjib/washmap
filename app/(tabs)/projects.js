@@ -7,7 +7,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../services/axiosConfig';
 import { useNavigation } from 'expo-router';
 
 export default function Projects() {
@@ -17,7 +17,7 @@ export default function Projects() {
 
     const getProjects = async () => {
       setShowLoader(true);
-        const res = await axios.get(`https://ruwassa-69889b243ddb.herokuapp.com/api/v1/ruwassa/projects`);
+        const res = await api.get('/projects');
         setProjects(res.data);
         setShowLoader(false);
         // console.log(res.data);

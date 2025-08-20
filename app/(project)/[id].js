@@ -7,13 +7,13 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../services/axiosConfig';
 
 export default function Projects() {
     const [projects, setProjects] = useState([]);
 
     const getProjects = async () => {
-        const res = await axios.get(`https://ruwassa-69889b243ddb.herokuapp.com/api/v1/ruwassa/projects`);
+        const res = await api.get('/projects');
         setProjects(res.data);
     }
         

@@ -16,7 +16,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
-import { baseURL } from './services/config';
+import api from './services/axiosConfig';
 
 export default function ReportForm() {
   const [date, setDate] = useState(new Date());
@@ -134,15 +134,9 @@ export default function ReportForm() {
         });
       }
 
-      const response = await fetch(`${baseURL}/dailyreports`, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await api.post('/dailyreports', formData);
 
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         Alert.alert('Success', 'Report submitted successfully!');
         resetForm();
         await generateAndSharePDF(); // Generate and share PDF after successful submission
